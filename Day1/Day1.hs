@@ -1,4 +1,7 @@
-module Day1 where
+module Main where
+
+import Data.Char (isDigit)
+import Data.List (isPrefixOf)
 
 {- Task 1:
 The input document consists of lines of alphanumerical text. On each line,
@@ -7,33 +10,24 @@ that order) to form a single two-digit number. Consider the entire document,
 what is the sum of all of the values?
 -}
 
-findFirstDigit :: String -> Maybe Int
-findFirstDigit [] = Nothing
-findFirstDigit (x:xs)
-  | elem x "0123456789" = Just $ read [x]
-  | otherwise = findFirstDigit xs
-
+-- Combine first and last digit chars into two-digit number
 combineDigits :: String -> Maybe Int
 combineDigits line =
-  let a = findFirstDigit line
-      b = findFirstDigit $ reverse line
+  let a = dropWhile (not . isDigit) line
+      b = dropWhile (not . isDigit) $ reverse line
   in combine a b
   where
-    combine (Just x) (Just y) = Just $ (10 * x) + y
-    combine _ _ = Nothing
+    combine "" "" = Nothing
+    combine (x:_) (y:_) = Just $ read [x,y]
 
+-- Sum of all two-digit numbers
 makeSum :: [String] -> Maybe Int
 makeSum lines =
-  let numbers = map combineDigits lines
-  in foldl add (Just 0) numbers
-  where 
-    add (Just x) (Just y) = Just $ x + y
-    add Nothing _ = Nothing
-    add _ Nothing = Nothing
+  fmap sum $ sequence $ map combineDigits lines
 
 task1 :: String -> IO (Maybe Int)
 task1 filename =
-  readFile filename >>= return . words >>= return . makeSum
+  readFile filename >>= return . lines >>= return . makeSum
 
 testTask1 :: IO ()
 testTask1 =
@@ -51,37 +45,24 @@ consider that some of the digits are actually spelled out with letters
 sum of all of the values?
 -}
 
+-- Allowed digit replacements
 digits :: [(String,String)]
-digits = [ ("zero","0"), ("one","1"), ("two","2"), ("three","3"),
-           ("four","4"), ("five","5"), ("six","6"), ("seven","7"),
-           ("eight","8"), ("nine","9") ]
+digits = [("zero","0"), ("one","1"), ("two","2"), ("three","3"), ("four","4"),
+          ("five","5"), ("six","6"), ("seven","7"),("eight","8"), ("nine","9")]
 
-findPattern :: String -> [(String,(String,Int))] -> Maybe (String, Int)
-findPattern line patterns =
-  case (line, patterns) of
-    (_, []) -> Nothing
-    (_, [ ("", x) ]) -> Just x
-    ([], _) -> Nothing
-    (x:xs, _) -> let candidates = filter (\y -> (head . fst) y == x) patterns
-                 in findPattern xs $ map (\y -> ( (tail . fst) y, snd y)) candidates
-
-replacePatterns :: String -> [(String,(String,Int))]-> String
-replacePatterns [] _ = []
-replacePatterns line replacements =
-  case (findPattern line replacements) of
-    Nothing -> head line : replacePatterns (tail line) replacements
-    Just (x,y) -> x <> replacePatterns (drop (y-1) line) replacements
-
+-- Replace 'spelled digits' with appropriate digit characters
 replaceDigits :: String -> String
-replaceDigits line =
-  let replacements = map (\x -> (fst x, (snd x, length (fst x)))) digits
-  in replacePatterns line replacements
+replaceDigits [] = []
+replaceDigits line  =
+  case (findPattern line) of
+    [] -> head line : replaceDigits (tail line)
+    [(x,y)] -> y <> replaceDigits (drop (length x - 1) line)
+  where
+    findPattern line = filter (\x -> isPrefixOf (fst x) line) digits
 
 task2 :: String -> IO (Maybe Int)
 task2 filename =
-  do
-    a <- readFile filename
-    return (makeSum . words . replaceDigits $ a)
+  readFile filename >>= return . makeSum . lines . replaceDigits
 
 testTask2 :: IO ()
 testTask2 =
@@ -91,3 +72,12 @@ testTask2 =
        case res of
          Just total -> putStrLn "OK"
          _ -> putStrLn "something went wrong"
+
+main :: IO ()
+main =
+  do
+    x <- task1 "day1-input"
+    y <- task2 "day1-input"
+    putStrLn $ "Task 1: " ++ show x
+    putStrLn $ "Task 2: " ++ show y
+
