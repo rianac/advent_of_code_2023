@@ -69,8 +69,8 @@ task1 :: FilePath -> IO Int
 task1 filename =
   do
     schema <- readFile filename
-    parts <- return . (map parseLine) . (zipWith (,) [1..]) . lines $ schema
-    return . findPartNumbers . makeParts $ parts
+    let parts = makeParts . (map parseLine) . (zip [1..]) . lines $ schema
+    return . findPartNumbers $ parts
 
 testTask1 :: IO ()
 testTask1 =
@@ -98,8 +98,8 @@ task2 :: FilePath -> IO Int
 task2 filename =
   do
     schema <- readFile filename
-    parts <- return . (map parseLine) . (zipWith (,) [1..]) . lines $ schema
-    return . findPartPairs . makeParts $ parts
+    let parts = makeParts . (map parseLine) . (zip [1..]) . lines $ schema
+    return . findPartPairs $ parts
 
 testTask2 :: IO ()
 testTask2 =
