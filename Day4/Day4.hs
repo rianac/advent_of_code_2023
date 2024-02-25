@@ -1,7 +1,10 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Main where
 
 import Text.ParserCombinators.ReadP
 import Data.Char (isDigit, isSpace)
+import Data.List (intersect)
 
 data Card = Card { getId :: Int, getWinNumbers :: [Int], getNumbers :: [Int]}
   deriving Show
@@ -35,7 +38,7 @@ match, then each guess doubles the number of points)
 -- Calculate number of successful matches for one card
 countMatches :: Card -> Int
 countMatches =
-  \x -> length $ filter (`elem` getWinNumbers x) (getNumbers x) 
+  \Card{..} -> length $  getNumbers `intersect` getWinNumbers 
 
 -- Calculates sum of card points
 countHits :: [Card] -> Int
