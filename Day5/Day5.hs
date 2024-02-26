@@ -7,97 +7,50 @@ import Data.Char (isAlpha,isDigit)
 type Interval = (Int,Int)
 type Conversion = (Interval,Int)
 type IvMap = [Conversion]
+type Almanac = Map.Map String IvMap
 
 -- Parse input file
 
 wordP :: ReadP String
 wordP = munch1 isAlpha
 
-numberP :: ReadP Int
-numberP = fmap read (munch1 isDigit)
+decimalP :: ReadP Int
+decimalP = fmap read (munch1 isDigit)
 
 seedsP :: ReadP [Int]
-seedsP = do
-  string "seeds: "
-  seeds <- sepBy numberP (char ' ')
-  return seeds
+seedsP = string "seeds: " *> decimalP `sepBy` char ' '
+
+makeConversion :: Int -> Int -> Int -> Conversion
+makeConversion d s r = ((s, (s + r - 1)), d - s)
 
 intervalP :: ReadP Conversion
-intervalP = do
-  d_start <- numberP
-  char ' '
-  s_start <- numberP
-  char ' '
-  int_range <- numberP
-  return ((s_start, (s_start+int_range-1)),d_start-s_start)
+intervalP =
+  makeConversion <$> decimalP <* char ' ' <*> decimalP <* char ' ' <*> decimalP
 
 intervalsP :: ReadP IvMap
-intervalsP = sepBy intervalP (char '\n')
+intervalsP = intervalP `sepBy` char '\n'
+
+makeMap :: String -> String -> IvMap -> (String,IvMap)
+makeMap s d is = (take 4 s ++ "-to-" ++ take 4 d,is)
 
 mapP :: ReadP (String,IvMap)
-mapP = do
-  source <- wordP
-  string "-to-"
-  destination <- wordP
-  string " map:\n"
-  intervals <- intervalsP
-  return (take 4 source ++ "-to-" ++ take 4 destination,intervals)
+mapP =
+  makeMap <$> wordP <* string "-to-" <*> wordP <* string " map:\n" <*> intervalsP
 
-mapsP :: ReadP [(String,IvMap)]
-mapsP = sepBy mapP (string "\n\n")
+almanacP :: ReadP Almanac
+almanacP = Map.fromList <$> mapP `sepBy` string "\n\n"
 
-dataP :: ReadP ([Int], Map.Map String IvMap)
-dataP = do
-  seeds <- seedsP
-  string "\n\n"
-  maps <- mapsP
-  char '\n'
-  eof
-  return (seeds,Map.fromList maps)
-
-parseData :: String -> ([Int], Map.Map String IvMap)
+parseData :: String -> ([Int], Almanac)
 parseData =
   fst . head . readP_to_S dataP
+  where
+    dataP = (,) <$> seedsP <* string "\n\n" <*> almanacP <* char '\n' <* eof
 
 {- Task 1:
 To convert a set of numbers (seeds) through a pipe of mappings (seeds->soil,
 soil-> fertilizer, ..., humidity->location) and identify the seed corresponding
 to the closest location.
 -}
-
-{-
--- Find appropriate mapping for a seed
-convertNumber :: Int -> Maybe IvMap -> Int
-convertNumber _ Nothing = error "Unpredicted situation"
-convertNumber x (Just map) =
-  case filter (containing x) map  of
-       [] -> x
-       ((_,y):_) -> x + y
-  where
-    containing x ((lower,upper),_) = x >= lower && x <= upper
-
-
--- Push a seed through a pipe of mappings to find seed's location
-fullConversion :: Map.Map String IvMap -> Int -> Int
-fullConversion maps seed =
-  let soil = convertNumber seed $ Map.lookup "seed-to-soil" maps
-      fertilizer = convertNumber soil $ Map.lookup "soil-to-fert" maps
-      water = convertNumber fertilizer $ Map.lookup "fert-to-wate" maps
-      light = convertNumber water $ Map.lookup "wate-to-ligh" maps
-      temperature = convertNumber light $ Map.lookup "ligh-to-temp" maps
-      humidity = convertNumber temperature $ Map.lookup "temp-to-humi" maps
-      location = convertNumber humidity $ Map.lookup "humi-to-loca" maps
-  in location
-
-
--- Find minimal location as minimum os seeds' locations
-findLocation :: ([Int], Map.Map String IvMap) -> Int
-findLocation input =
-  let seeds = fst input
-      maps = snd input
-  in minimum $ map (fullConversion maps) seeds
--}
-
 
 -- Find appropriate mapping for a list of seeds
 convertNumbers :: [Int] -> Maybe IvMap -> [Int]
@@ -112,7 +65,7 @@ convertNumbers xs (Just mapping) =
 
 -- Push a list of seeds through a pipe of mappings to find seed's location
 -- and select minimum location
-findLocation :: ([Int], Map.Map String IvMap) -> Int
+findLocation :: ([Int], Almanac) -> Int
 findLocation (seeds,maps) =
   let soil = convertNumbers seeds $ Map.lookup "seed-to-soil" maps
       fertilizer = convertNumbers soil $ Map.lookup "soil-to-fert" maps
@@ -142,7 +95,7 @@ to the closest location.
 
 -- Prepare ranges of seeds and find minimal location as minimum of
 -- minimal locations of seed ranges
-findLocation2 :: ([Int], Map.Map String IvMap) -> Int
+findLocation2 :: ([Int], Almanac) -> Int
 findLocation2 (seeds,maps) =
   minimum $ map (\(x,y) -> findLocation ([x..y],maps)) $ makeIntervals seeds
   where
