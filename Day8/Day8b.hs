@@ -7,7 +7,7 @@ import qualified Data.Map as Map
 
 type Graph = Map String (String, String)
 
--- Parse input file
+-- Parse input file --
 
 removeChars :: String -> String -> String
 removeChars forbiden = filter (not . (flip elem forbiden))
@@ -19,9 +19,7 @@ parseData input =
   in (plan, Map.fromList $ map (makeNode . parseNodes) $ lines nodes)
   where parseNodes = words . removeChars "=(,)"
 
-{- Task 1
-To find the shortest path from node AAA to node ZZZ.
--}
+-- Task 1 --
 
 -- Length calculation for graph traversal following given step sequence
 runStates :: (String -> Bool) -> String -> Graph -> String -> Int
@@ -45,10 +43,7 @@ testTask1 = do
     (2,6) -> putStrLn "OK"
     _     -> putStrLn "something went wrong"
 
-{- Task 2
-To find all shortest paths from nodes **A to nodes **Z such, that all have the
-same length.
--}
+-- Task 2 --
 
 -- Prepare conditions for several traversals and calculate number of
 -- steps for their coordinated finishing at the same time

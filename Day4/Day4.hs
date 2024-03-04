@@ -9,7 +9,7 @@ import Data.List (intersect)
 data Card = Card { getId :: Int, getWinNumbers :: [Int], getNumbers :: [Int]}
   deriving Show
 
--- Parse all lines
+-- Parse all lines --
 
 cardIdP :: ReadP String
 cardIdP = string "Card" >> munch1 isSpace *> munch isDigit <* char ':'
@@ -30,10 +30,7 @@ parseCards :: String -> [Card]
 parseCards =
   map (fst . head . readP_to_S lineP) . lines
 
-{- Task 1:
-Cards are valued based on number of successful guesses (1 point for the first
-match, then each guess doubles the number of points)
--}
+-- Task 1 --
 
 -- Calculate number of successful matches for one card
 countMatches :: Card -> Int
@@ -57,10 +54,7 @@ testTask1 = do
     13 -> putStrLn "OK"
     _  -> putStrLn "something went wrong"
 
-{- Task 2:
-Extend card deck by copying cards based on the number of their successful
-matches and find the size of the final deck.
--}
+-- Task 2 --
 
 -- merge copied cards to card stack
 addCards :: Int -> Int -> [(Int,Int)] -> [(Int,Int)]

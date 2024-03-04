@@ -10,7 +10,7 @@ type Conversion = (Interval,Int)
 type IvMap = [Conversion]
 type Almanac = Map.Map String IvMap
 
--- Parse input file
+-- Parse input file --
 
 wordP :: ReadP String
 wordP = munch1 isAlpha
@@ -50,11 +50,7 @@ parseData =
   where
     dataP = (,) <$> seedsP <* string "\n\n" <*> almanacP <* char '\n' <* eof
 
-{- Task 1:
-To convert a set of numbers (seeds) through a pipe of mappings (seeds->soil,
-soil-> fertilizer, ..., humidity->location) and identify the seed corresponding
-to the closest location.
--}
+-- Task 1 --
 
 -- Find appropriate mapping for a list of seed intervals
 convertNumbers :: [Interval] -> Maybe IvMap -> [Interval]
@@ -100,11 +96,7 @@ testTask1 = do
     35 -> putStrLn "OK"
     _  -> putStrLn "something went wrong"
 
-{- Task 2:
-To form ranges of numbers (seeds), pipe them through the same set
-of mappings as in Task1 and identify the seed corresponding
-to the closest location.
--}
+-- Task 2 --
 
 -- Prepare ranges of seeds
 makeIntervals [] = []

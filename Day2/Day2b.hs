@@ -4,11 +4,7 @@ import Text.ParserCombinators.ReadP
 import Control.Applicative ((<|>))
 import Data.Char (isDigit)
 
-{- Task 1:
-Determine which games would have been possible if the bag had been loaded
-with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum
-of the IDs of those games?
--}
+-- Task 1 --
 
 type GameId = Int
 type Trial = [(String,Int)]
@@ -68,11 +64,7 @@ testTask1 =
       8 -> putStrLn "OK"
       _ -> putStrLn "something went wrong"
 
-{- Task 2:
-What is the fewest number of cubes of each color that could have been in the
-bag to make the game possible? For each game, find the minimum set of cubes
-that must have been present. What is the sum of the power of these sets?
--}
+-- Task 2 --
 
 -- Product of required minimal numbers of different cubes in the bag for a game
 powerOfCubes :: Game -> Int

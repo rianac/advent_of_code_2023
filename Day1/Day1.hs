@@ -3,12 +3,7 @@ module Main where
 import Data.Char (isDigit)
 import Data.List (isPrefixOf)
 
-{- Task 1:
-The input document consists of lines of alphanumerical text. On each line,
-the value can be found by combining the first digit and the last digit (in
-that order) to form a single two-digit number. Consider the entire document,
-what is the sum of all of the values?
--}
+-- Task 1 --
 
 -- Combine first and last digit chars into two-digit number
 combineDigits :: String -> Maybe Int
@@ -38,12 +33,7 @@ testTask1 =
          Just total -> putStrLn "OK"
          _ -> putStrLn "something went wrong"
 
-{- Task 2:
-To find the real first and last digit on each line, it is necessary
-consider that some of the digits are actually spelled out with letters
-(one, two, three, four, five, six, seven, eight, and nine). What is the
-sum of all of the values?
--}
+-- Task 2 --
 
 -- Allowed digit replacements
 digits :: [(String,String)]
@@ -80,4 +70,3 @@ main =
     y <- task2 "day1-input"
     putStrLn $ "Task 1: " ++ show x
     putStrLn $ "Task 2: " ++ show y
-

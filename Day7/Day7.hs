@@ -40,11 +40,7 @@ instance Read Hand where
 parseData :: String -> [(Hand, Int)]
 parseData = map ((\[a, b] -> (read a, read b)) . words) . lines
 
-{- Task 1:
-To order five-card hands - ordering is primarily based on type of hands
-and secondarily on type of cards included in hands (in case it is not
-possible to decide using the first ordering).
--}
+-- Task 1 --
 
 calculateWinning :: [(Hand, Int)] -> Int
 calculateWinning = sum . map (\(r, (_, b)) -> r * b) . zip [1..] . sort
@@ -58,10 +54,7 @@ testTask1 = do
     6440 -> putStrLn "OK"
     _    -> putStrLn "something went wrong"
 
-{- Task 2:
-Card J represents Joker - it is considered the least valued card but can
-be replaced by any other card.
--}
+-- Task 2 --
 
 replaceJ :: String -> String
 replaceJ = intercalate "*" . splitOn "J"

@@ -3,11 +3,8 @@ module Main where
 parseData :: String -> [[Int]]
 parseData x = map (map read . drop 1 . words) $ lines x
 
-{- Task 1:
-Boat race - holding down a button for time 'h' charges the boat, releasing
-button allows boat to move for remaining time. For each time unit charging
-at the beginning, the boat speed increases by one unit.
-
+-- Task 1 --
+{-
 A bit of analysis:
    t - available time,
    h - holding time (0 <= h <= t) as well as speed after holding time,
@@ -49,9 +46,7 @@ testTask1 = do
     288 -> putStrLn "OK"
     _   -> putStrLn "something went wrong"
 
-{- Task 2:
-To ignore the spaces between the numbers on each line of input files.
--}
+-- Task 2 --
 
 parseData2 :: String -> [Int]
 parseData2 x = map (read . foldl1 (++) . drop 1 . words) $ lines x

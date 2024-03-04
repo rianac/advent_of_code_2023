@@ -3,11 +3,7 @@ module Main where
 import Text.ParserCombinators.ReadP
 import Data.Char (isDigit)
 
-{- Task 1:
-To sum all the numbers which are adjacent to a symbol - any number adjacent
-to a symbol, even diagonally, is a "part number" and should be included in
-your sum.
--}
+-- Task 1 --
 
 type Position = (Int,Int)
 data Part = Number Int | Symbol Char  deriving (Eq, Show)
@@ -80,11 +76,7 @@ testTask1 =
       4361 -> putStrLn "OK"
       _ -> putStrLn "something went wrong"
 
-{- Task 2:
- A gear is any * symbol that is adjacent to exactly two part numbers. Its
-gear ratio is the result of multiplying those two numbers together. Find
-the gear ratio of every gear and add them all up.
--}
+-- Task 2 --
 
 -- Find number pairs adjacent to a symbol '*' and sum their products
 findPartPairs :: ([(Part,[Position])],[(Part,[Position])]) -> Int
