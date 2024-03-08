@@ -4,4 +4,4 @@ Despite a grid-like input, the problem was quite easy. Simple parsing to extract
 
 ## What I have learnt:
 
-- new functions (`\\\\`)
+- new functions (`\\`)
