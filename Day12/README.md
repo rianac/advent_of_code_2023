@@ -9,4 +9,4 @@ To solve the second task, the approach based on parser combinators is not viable
 ## What I have learnt:
 
 - use parsing combinators for a task of getting one arrangement and not many (especially not millions alternative arrangements)
-- new functions (`!!')
+- new functions (`!!`)
