@@ -4,9 +4,9 @@ The problem reminded me a parsing problem. Therefore, I decided to solve it usin
 
 Next, I tried to use parser combinators. After longer tinkering a bit with how to combine parsers into sequences, I came with two solutions - one based on `<*>` (suitable if parsed values are relevant) and the other based on `*>` (if only number of matches is relevant but not parsed values). Both approaches worked well for the first task. Regarding the second task - there was no problem with the given example. But I hit the scalability wall when processing the given input. My program consumed all computer memory with subsequent swapping.
 
-To solve the second task, the approach based on parser combinators is not viable.
+To solve the second task, the approach based on parser combinators is not viable. Therefore, I changed the approach and used depth-first tree search to prepare another code file. Simple search was a way too slow but simple memoization (only of branching tree nodes) made a real difference.
 
 ## What I have learnt:
 
 - use parsing combinators for a task of getting one arrangement and not many (especially not millions alternative arrangements)
-- new functions (`!!`)
+- new functions (`!!')
