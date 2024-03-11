@@ -1,6 +1,6 @@
 module Main where
 
-import Data.List (intersperse)
+import Data.List (intersperse, intercalate)
 import Data.List.Split (splitOn)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
@@ -31,15 +31,13 @@ searchMemo m (x : y) []
 searchMemo m z@(x : y) c@(a : b)
   | length z < sum (intersperse 1 c) = (m, 0)
   | x == '.' = searchMemo m y c
-  | x == '#' && b == [] =
-      case all (`elem` "#?") (take (a - 1) y) of
-        True -> searchMemo m (drop a z) b
-        False -> (m, 0)
+  | x == '#' && null b =
+      if all (`elem` "#?") (take (a - 1) y)
+      then searchMemo m (drop a z) b else (m, 0)
   | x == '#' =
-      case (all (`elem` "#?") $ take (a - 1) y)
-           && (head (drop a z) `elem` ".?") of
-        True -> searchMemo m (drop a y) b
-        False -> (m, 0)
+      if all (`elem` "#?") (take (a - 1) y)
+         && head (drop a z) `elem` ".?"
+      then searchMemo m (drop a y) b else (m, 0)
   | x == '?' =
       case M.lookup (z, c) m of
         Just v -> (m, v)
@@ -49,12 +47,12 @@ searchMemo m z@(x : y) c@(a : b)
                    in (m3, v1 + v2)
 
 -- Unfold data and count the number of possible arrangements for all patterns
-countAllArrangements :: Int -> [([Char], [Int])] -> Int
+countAllArrangements :: Int -> [(String, [Int])] -> Int
 countAllArrangements r = sum . map (uncurry search . makeUnfolded)
   where
     makeUnfolded (x, y) = (unfoldData x, unfoldGroups y)
     unfoldGroups = concat . replicate r
-    unfoldData = concat . intersperse "?" . replicate r
+    unfoldData = intercalate "?" . replicate r
 
 task1 filename = countAllArrangements 1 . parseData <$> readFile filename
 

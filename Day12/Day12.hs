@@ -1,6 +1,6 @@
 module Main where
 
-import Data.List (intersperse)
+import Data.List (intersperse, intercalate)
 import Data.List.Split (splitOn)
 import Text.ParserCombinators.ReadP
 
@@ -14,19 +14,19 @@ parseData xs =
 
 -- Task 1 --
 
-damagedP :: Int -> ReadP [Char]
+damagedP :: Int -> ReadP String
 damagedP x = count x $ satisfy (`elem` "?#")
 
-ok1P, okP :: ReadP [Char]
+ok1P, okP :: ReadP String
 ok1P       = many1 $ satisfy (`elem` ".?")
 okP        = many $ satisfy (`elem` ".?")
 
 -- Prepare a list of required parsers
-makeParsersP :: [Int] -> [ReadP [Char]]
+makeParsersP :: [Int] -> [ReadP String]
 makeParsersP xs = intersperse ok1P (map damagedP xs)
 
 -- Combine parsers into a sequence
-composeParsersP :: [ReadP [Char]] -> ReadP [[Char]]
+composeParsersP :: [ReadP String] -> ReadP [String]
 composeParsersP [a,b,c] =
   let fun _ _ _ = []
   in fun <$> a <*> b <*> c
@@ -66,12 +66,12 @@ countArrangements (x, y) =
     prepareParser = finalizeParser . makeParser
 
 -- Unfold data and count the number of possible arrangements for all patterns
-countAllArrangements2 :: Int -> [([Char], [Int])] -> Int
+countAllArrangements2 :: Int -> [(String, [Int])] -> Int
 countAllArrangements2 r = sum . map (countArrangements . makeUnfolded)
   where
     makeUnfolded (x, y) = (unfoldData x, unfoldGroups y)
     unfoldGroups = concat . replicate r
-    unfoldData = concat . intersperse "?" . replicate r
+    unfoldData = intercalate "?" . replicate r
 
 task1alt filename =  countAllArrangements2 1 . parseData <$> readFile filename
 
