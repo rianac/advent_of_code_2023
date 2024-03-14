@@ -1,10 +1,10 @@
 ## Day 13
 
-In order to be able to compare rows each to other as well as columns, I decided to represent input grid redundantly twofold - as a list of rows as well as a list of columns. Parsing input into a list of rows was quite easy by a two liner. Then I transformed it into a list of columns - I created a matrix from lines, transposed the matrix (changed rows and columns) and transformed it into a list of lists back.
+In order to be able to compare rows each to other as well as columns, I decided to represent input grid redundantly twofold - as a list of rows as well as a list of columns. Parsing input into a list of rows was quite easy by a two-liner. Then I transformed it into a list of columns - I created a matrix from lines, transposed the matrix (changed rows and columns) and transformed it into a list of lists back.
 
 The algorithm was based on stating, which rows/columns should be identical to represent reflexion. First, I prepared lists of corresponding index pairs. Subsequent reflection check of different reflection lines was easy - just strictly following prepared index pairs.
 
-In the second part I realized, that there is no need to find the positions of smudges - only find those reflexion candidates which were hampered by exactly one smudge somewhere on the grid.
+In the second part I realized, that there is no need to find the exact positions of smudges - only to find those reflexion candidates which were hampered by exactly one smudge somewhere on the grid.
 
 ## What I have learnt:
 
