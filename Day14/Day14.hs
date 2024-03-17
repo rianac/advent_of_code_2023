@@ -8,7 +8,7 @@ data Place = Oval | Free | Cube deriving (Show, Eq, Ord)
 
 -- Parse input file --
 
-parseData = map (map codeItem) . lines
+parseData = transpose . map (map codeItem) . lines
   where
     codeItem 'O' = Oval
     codeItem '.' = Free
@@ -17,8 +17,8 @@ parseData = map (map codeItem) . lines
 -- Task 1 --
 
 -- Roll oval stones towards beginning of lines
-tiltForward :: Grid -> Grid
-tiltForward = map $ intercalate [Cube] . map sort . splitOn [Cube]
+tilt :: Grid -> Grid
+tilt = map $ intercalate [Cube] . map sort . splitOn [Cube]
 
 -- Calculate load based on distance of oval stones to bottom of grid
 calculateLoad :: Grid -> Int
@@ -27,23 +27,22 @@ calculateLoad = sum . map loadOfLine
     loadOfLine = sum . zipWith (\x y -> x * weight y) [1 ..] . reverse
     weight x = if x == Oval then 1 else 0
 
-task1 filename = calculateLoad . tiltForward . transpose . parseData
+task1 filename = calculateLoad . tilt . parseData
   <$> readFile filename
 
 -- Task 2 --
 
--- Roll oval stones towards end of lines
-tiltBackward :: Grid -> Grid
-tiltBackward = map reverse . tiltForward . map reverse
+-- Rotate grid by 90° anticlockwise
+rotate90 :: Grid -> Grid
+rotate90 = transpose . map reverse
 
 -- Roll oval stones subsequently in all directions
 tiltCycle :: Grid -> Grid
-tiltCycle grid = east
+tiltCycle grid = foldr tiltAndRotate grid ["N", "W", "S", "E"]
   where
-    north = tiltForward $ transpose grid
-    west  = tiltForward $ transpose north
-    south = tiltBackward $ transpose west
-    east  = tiltBackward $ transpose south
+    tiltAndRotate _ = rotate90 . tilt
+
+task = parseData  <$> readFile "day14-example"
 
 -- Try to find a periodic repetition in the serie and its beginning
 searchRepetition :: Grid -> ([Grid], Int)
@@ -58,7 +57,7 @@ searchRepetition grid = go grid []
 -- Cheat a bit - do not perform all spinnings but calculate which
 -- spinning will be the final one
 solve :: Grid -> Int
-solve grid = calculateLoad . transpose $ repeatedHistory !! pos
+solve grid = calculateLoad $ repeatedHistory !! pos
   where
     (repeatedHistory, rampPhaseLength) = searchRepetition grid
     pos = (1000000000 - rampPhaseLength) `mod` length repeatedHistory
