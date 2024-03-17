@@ -42,8 +42,6 @@ tiltCycle grid = foldr tiltAndRotate grid ["N", "W", "S", "E"]
   where
     tiltAndRotate _ = rotate90 . tilt
 
-task = parseData  <$> readFile "day14-example"
-
 -- Try to find a periodic repetition in the serie and its beginning
 searchRepetition :: Grid -> ([Grid], Int)
 searchRepetition grid = go grid []
