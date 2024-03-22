@@ -6,9 +6,9 @@ The day was a bit demanding algorithmically. To follow a beam was not so easy in
 - fork itself into two separate beams running in opposite directions
 - return at previously seen position and run in a loop
 
-as well as to combine all behaviour types together. But after sorting, a proper algorithm coding was almost straightforward.
+as well as to combine all behaviour types together. But after sorting a proper algorithm, its coding was almost straightforward.
 
-The first task investigated only one beam, the second task involved several beams starting from different initial positions (i.e. several repetitions of the first task). My first attempt needed more than eleven minutes to complete the tasks. My intuition was that my problem is in determining repeatedly whether an element is present in a long list. Replacing querying long lists of elements with querying sets of elements or with testing element values directly helped to shorten runtime to five seconds.
+The first task was easy, the second task basically involved several repetitions of the first task within different initial conditions. My first attempt needed more than eleven minutes to complete the tasks. My intuition was that my problem is in determining repeatedly whether an element is present in a long list. Replacing querying long lists of elements with querying sets of elements or with testing element values directly helped to shorten runtime to five seconds.
 
 ## What I have learnt:
 
