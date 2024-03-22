@@ -14,5 +14,5 @@ The first task was easy, the second task basically involved several repetitions 
 
 - querying long lists is possible but not a good idea
 - creating sets (`singleton`, `fromList`)
-- basic work with sets (`indices`, `bounds`, `member`, `notMember`, `map`, `union`)
+- basic work with sets (`member`, `notMember`, `map`, `union`)
 
