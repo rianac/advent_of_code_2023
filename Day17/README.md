@@ -6,8 +6,16 @@ As a result, my code stopped to produce right results. I had a deep experience o
 
 Nevertheless, my program was not a great success. It calculated both tasks, but the first calculation took almost one minute while the second task required around ten minutes. It seems, I selected not the best approach how to solve the task.
 
+Edit: I prepared a more optimized version of the code with including these changes
+
+- only valid positions are generated instead of generating all possible positions with subsequent filtering only the valid ones,
+- moves of different sizes in the straight direction are allowed instead of moving by one step only,
+- *open* is represented as a set instead of a list with no need of permanent explicit sorting.
+
+As a result, runtime decreased to around one second.
+
 ## What I have learnt:
 
 - more intense than usual usage of record-like datatypes
 - importance of required typeclass instances on which used functions are based
-
+- new functions operating on sets (`findMin`, `deleteMin`, `deleteFindMin`)
