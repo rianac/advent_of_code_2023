@@ -1,3 +1,4 @@
+
 module Main where
 
 import Data.Char (isAlpha)
@@ -40,8 +41,8 @@ parseData :: String -> Nodes
 parseData text = Map.fromList (specialNodes ++ inOutNodes)
   where
     inOutNodes = fst . head . readP_to_S nodesP $ text
-    specialNodes = [("button", Module But ["broadcaster"])]
-                    ++ map (, Module Out []) outNodes
+    specialNodes = ("button", Module But ["broadcaster"])
+                    : map (, Module Out []) outNodes
     outNodes =
       filter (`notElem` map fst inOutNodes) $ concatMap (dest . snd) inOutNodes
 
@@ -92,7 +93,7 @@ react net states queue signals
     Just (sig@(from, pulse, to), rest) = Q.dequeue queue
     (newStates, newSignals) =
       reactNode net states to (mt $ net Map.! to) from pulse
-    newQueue = foldl (\q e -> Q.enqueue e q) rest newSignals
+    newQueue = foldl (flip Q.enqueue) rest newSignals
 
 -- Process one thousand repetitions of pushing button
 thousandPresses :: Nodes -> Int
