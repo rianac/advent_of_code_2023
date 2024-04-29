@@ -80,13 +80,13 @@ fullSupport bricks xs =
 
 -- Find which bricks fall if a given brick is disintegrated
 falling :: [Brick] -> Int -> [Int]
-falling bricks brick = go bricks (brick : [])
+falling bricks brick = go bricks [brick]
   where
     go bricks falled = if null newFalled
       then falled
       else go (reducedStack bricks) (falled <> newFalled)
       where
-        reducedStack xs = filter ((`notElem` falled) . fst) xs
+        reducedStack = filter ((`notElem` falled) . fst)
         newFalled = fullSupport (reducedStack bricks) falled
 
 -- Count fallen bricks as a result of disintegrating each brick

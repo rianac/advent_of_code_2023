@@ -53,7 +53,7 @@ possibleStarts grid = if startPos `elem` crosPos
   where
     (startPos, _) = startAndGoal grid
     crosPos = findCrossingPos grid
-    succs x = map (: x : []) $ neighbours grid x
+    succs x = map (: [x]) $ neighbours grid x
 
 -- Continue the given path (given as the first step) until reach one
 -- of possible goal positions
@@ -81,14 +81,14 @@ successors graph node = map (snd . fst) $ filter ((node ==) . fst . fst) graph
 -- Depth-first search
 search :: [Segment] -> Position -> [Path] -> Int -> Int
 search _ _ [] maxDl = maxDl
-search graph goal paths@(((x : xs), dl) : rest) maxDl
+search graph goal paths@((x : xs, dl) : rest) maxDl
   | x == goal = search graph goal rest (max dl maxDl)
   | otherwise = case filter (`notElem` xs) $ successors graph x of
         []       -> search graph goal rest maxDl
         nextPosx -> search graph goal (newPaths nextPosx <> rest) maxDl
   where
-    newPaths posx = map extendPath posx
-    extendPath pos = ((pos : x : xs), dl + segLength pos)
+    newPaths = map extendPath
+    extendPath pos = (pos : x : xs, dl + segLength pos)
     segLength pos = snd . head $ filter ((== (x, pos)) . fst) graph
 
 -- Find longest path from start to goal position

@@ -102,12 +102,12 @@ longestPaths dag ordNodes =
   where
     updateLengths pos lengths = M.insert pos (pathLength pos lengths) lengths
     pathLength pos lengths = maximum $
-      0 : (map (\x -> (snd . head $ filter ((== (x, pos)) . fst) dag)
-                  + (lengths M.! x)) $ parents dag pos)
+      0 : map (\x -> (snd . head $ filter ((== (x, pos)) . fst) dag)
+                  + (lengths M.! x)) (parents dag pos)
 
 -- Find longest path from start to goal position
 findLongestPath :: Grid -> Int
-findLongestPath grid = longestPaths dag linearDAG M.! (head linearDAG)
+findLongestPath grid = longestPaths dag linearDAG M.! head linearDAG
   where
     crosPos = findCrossingPos grid
     (startPos, goalPos) = startAndGoal grid
