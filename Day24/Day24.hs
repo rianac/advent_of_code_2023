@@ -1,7 +1,7 @@
 module Main where
 
 import Data.List.Split (splitOn)
-import Data.Maybe (maybeToList)
+import Data.Maybe (mapMaybe)
 import qualified Data.Matrix as Mat
 
 data Position = Position{xPos :: Int, yPos :: Int, zPos :: Int} deriving (Show, Eq, Ord)
@@ -59,7 +59,7 @@ colideFuturePos h1@(HS (Position px1 py1 _) (Velocity vx1 vy1 _))
 -- Count pairs of hailstones's path which cross within given area in future
 countCrossings :: (Int, Int) -> [HailStone] -> Int
 countCrossings (minPos, maxPos) xs =
-  length . filter insideArea . concatMap (maybeToList . uncurry colideFuturePos) $ comb
+  length . filter insideArea . mapMaybe (uncurry colideFuturePos) $ comb
   where
     comb = [ (x, y) | x <- xs, y <- xs, x < y]
     (minPos', maxPos') = (toRational minPos, toRational maxPos)
@@ -67,7 +67,7 @@ countCrossings (minPos, maxPos) xs =
       minPos' <= xPos && maxPos' >= xPos && minPos' <= yPos && maxPos' >= yPos
 
 task1 limitRange filename =
-  (countCrossings limitRange) . parseData <$> readFile filename
+  countCrossings limitRange . parseData <$> readFile filename
 
 -- Task 2 --
 
@@ -86,9 +86,9 @@ Next, testing whether the rock will hit all available hailstones.
 -- Defining A matrix of linear equations (coeficients of variables).
 -- To make the matrix of square shape, excessive equations were ignored
 matrixA :: [HailStone] -> Mat.Matrix Rational
-matrixA [(HS (Position px1 py1 pz1) (Velocity vx1 vy1 vz1)),
-         (HS (Position px2 py2 pz2) (Velocity vx2 vy2 vz2)),
-         (HS (Position px3 py3 pz3) (Velocity vx3 vy3 vz3))] =
+matrixA [HS (Position px1 py1 pz1) (Velocity vx1 vy1 vz1),
+         HS (Position px2 py2 pz2) (Velocity vx2 vy2 vz2),
+         HS (Position px3 py3 pz3) (Velocity vx3 vy3 vz3)] =
   Mat.mapPos (\(_, _) x -> toRational x) $ Mat.fromLists
   [
     [vy2 - vy1, vx1 - vx2, 0,         py1 - py2, px2 - px1, 0        ],
@@ -104,9 +104,9 @@ matrixA [(HS (Position px1 py1 pz1) (Velocity vx1 vy1 vz1)),
 
 -- Defining columnar matrix B of linear equations
 matrixB :: [HailStone] -> Mat.Matrix Rational
-matrixB [(HS (Position px1 py1 pz1) (Velocity vx1 vy1 vz1)),
-         (HS (Position px2 py2 pz2) (Velocity vx2 vy2 vz2)),
-         (HS (Position px3 py3 pz3) (Velocity vx3 vy3 vz3))] =
+matrixB [HS (Position px1 py1 pz1) (Velocity vx1 vy1 vz1),
+         HS (Position px2 py2 pz2) (Velocity vx2 vy2 vz2),
+         HS (Position px3 py3 pz3) (Velocity vx3 vy3 vz3)] =
   Mat.mapPos (\(_, _) x -> toRational x) $ Mat.fromLists
   [
     [px2 * vy2 - px1 * vy1 + py1 * vx1 - py2 * vx2],
@@ -152,7 +152,7 @@ colide (HS (Position px1 py1 pz1) (Velocity vx1 vy1 vz1))
 -- Find start position and velocity of the rock, test whether it will hit
 -- all hailstones in future, and calculate checksum of the rock's position
 findStart :: [HailStone] -> Int
-findStart hails = if all id $ map (colide start) hails
+findStart hails = if and $ map (colide start) hails
   then sum [xPos posStart, yPos posStart, zPos posStart]
   else error "Not able to hit all hailstorms"
   where
