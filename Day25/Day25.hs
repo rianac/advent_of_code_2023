@@ -1,8 +1,9 @@
 module Main where
 
 
+import Data.Ord
 import Data.Tuple (swap)
-import Data.List (sort, sortBy, group, groupBy)
+import Data.List (sort, sortOn, sortBy, group, groupBy)
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
 import System.Random (mkStdGen, randoms, randomIO)
@@ -56,8 +57,8 @@ bfs graph goal open@((x : rest) : openRest) closed
 
 -- Count frequencies of edges in paths between node pairs
 edgeFrequencies :: Graph -> [(Node, Node)] -> [(Int, Edge)]
-edgeFrequencies graph pairs =
-  map count . group . sort . concatMap (search graph) $ pairs
+edgeFrequencies graph =
+  map count . group . sort . concatMap (search graph)
   where
     count xs = (length xs, head xs)
 
@@ -80,7 +81,8 @@ floodGraph graph nodes = if null neighbours
 cutGraph :: Graph -> [(Node, Node)] -> (Int, Int)
 cutGraph graph pairs = (subgraphSize, M.size graph - subgraphSize)
   where
-    edges = take 3 . reverse . sort $ edgeFrequencies graph pairs
+    edges = take 3 . sortOn Down $ edgeFrequencies graph pairs
+--    edges = take 3 . reverse . sort $ edgeFrequencies graph pairs
     newGraph = foldl (\g e -> updateGraph g $ snd e) graph edges
     subgraphSize = floodGraph newGraph [fst . snd . head $ edges]
 
